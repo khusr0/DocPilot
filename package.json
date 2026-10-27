@@ -1,0 +1,109 @@
+{
+  "name": "docpilot",
+  "displayName": "DocPilot — Living Documentation",
+  "description": "Generate setup and project documentation and keep it current across coding sessions using your OpenAI API key.",
+  "version": "0.1.0",
+  "publisher": "local-tools",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./src/extension.js",
+  "extensionKind": [
+    "workspace"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false
+    },
+    "virtualWorkspaces": {
+      "supported": false
+    }
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check": "node --check src/extension.js && node --check src/core.js && node --check src/panel.js",
+    "package": "vsce package --allow-missing-repository --no-rewrite-relative-links --out docpilot-0.1.0.vsix"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "docpilot.open",
+        "title": "DocPilot: Open Dashboard",
+        "icon": "$(book)"
+      },
+      {
+        "command": "docpilot.update",
+        "title": "DocPilot: Generate / Update Documentation",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "docpilot.setKey",
+        "title": "DocPilot: Set OpenAI API Key"
+      },
+      {
+        "command": "docpilot.clearKey",
+        "title": "DocPilot: Remove OpenAI API Key"
+      },
+      {
+        "command": "docpilot.restore",
+        "title": "DocPilot: Restore Previous Documentation"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "docpilot.update",
+          "when": "isWorkspaceTrusted",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "DocPilot",
+      "properties": {
+        "docpilot.model": {
+          "type": "string",
+          "default": "gpt-4.1-mini",
+          "scope": "window",
+          "description": "OpenAI model supporting Responses API structured outputs. Availability depends on your API account."
+        },
+        "docpilot.autoUpdate": {
+          "type": "boolean",
+          "default": false,
+          "scope": "resource",
+          "description": "Automatically send project context to OpenAI and update docs on project open and 30 seconds after saved changes. Requires an API key already saved. API charges apply."
+        },
+        "docpilot.maxContextCharacters": {
+          "type": "number",
+          "default": 160000,
+          "minimum": 20000,
+          "maximum": 400000,
+          "scope": "resource",
+          "description": "Maximum source-code characters sent per run, excluding previous documentation."
+        },
+        "docpilot.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "scope": "resource",
+          "description": "Additional gitignore-style patterns to exclude from context. You can also create .docpilotignore in the project root."
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "ignore": "^7.0.5"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^4.0.0"
+  }
+}
